@@ -15,11 +15,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.fnac.fnacdirect.common.log.Log;
-import com.fnac.fnacdirect.common.manager.RightPaneFragmentManager;
-import com.fnac.fnacdirect.common.util.UIUtil;
-import com.fnac.fnacdirect.ui.activity.customer.CardViewActivity;
-import com.fnac.fnacdirect.ui.activity.customer.CardViewFragment;
 
 /**
  * The Class ChatHeadService.
@@ -98,82 +93,8 @@ public class ChatHeadService {
         chatHead.setClickable(true);
         chatHead.setEnabled(true);
 
-        params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
 
-        params.gravity = Gravity.TOP;
 
-        setInitialPosition(dm);
-        // params.x = width;
-        //
-        // if (dm.density <= 1) {
-        // params.y = 100;
-        // } else
-        // params.y = 200;
-
-        chatHead.setOnTouchListener(new View.OnTouchListener() {
-            private int initialX;
-            private int initialY;
-            private float initialTouchX;
-            private float initialTouchY;
-
-            @Override
-            public boolean onTouch(final View v, final MotionEvent event) {
-                Log.w("chatHead", "event = " + event.getRawX());
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        Log.e("chatHead", "MotionEvent.ACTION_DOWN");
-                        initialX = params.x;
-                        initialY = params.y;
-                        initialTouchX = event.getRawX();
-                        initialTouchY = event.getRawY();
-                        return true;
-                    case MotionEvent.ACTION_UP:
-                        Log.e("chatHead", "MotionEvent.ACTION_UP");
-                        setPadding();
-
-                        if (UIUtil.isTablet()) {
-                            params.y = 0;
-                        } else {
-                            params.x = width;
-                        }
-
-                        windowManager.updateViewLayout(chatHead, params);
-                        if (event.getRawX() <= (initialTouchX * 1.05)
-                                && event.getRawX() >= (initialTouchX * 0.95)
-                                && event.getRawY() <= (initialTouchY * 1.05)
-                                && event.getRawY() >= (initialTouchY * 0.95)) {
-                            chatHeadClicked();
-                        }
-                        // else {
-                        // decalage=1;
-                        // }
-                        return true;
-                    case MotionEvent.ACTION_MOVE:
-                        Log.e("chatHead", "MotionEvent.ACTION_MOVE");
-                        clearPadding();
-
-                        if (UIUtil.isTablet()) {
-                            params.x = initialX
-                                    + (int) (event.getRawX() - initialTouchX);
-                        } else {
-                            params.x = initialX
-                                    + (int) (event.getRawX() - initialTouchX * 1.5);
-                        }
-
-                        params.y = initialY
-                                + (int) (event.getRawY() - initialTouchY);
-                        windowManager.updateViewLayout(chatHead, params);
-
-                        return true;
-                }
-                return false;
-            }
-        });
 
     }
 
@@ -182,38 +103,9 @@ public class ChatHeadService {
      *
      * @return single instance of ChatHeadService
      */
-    /**
-     * @return
-     */
-    public static ChatHeadService getInstance() {
-        if (instance == null) {
-            instance = new ChatHeadService();
-        }
-        return instance;
-    }
 
-    /**
-     * Show chat head.
-     *
-     * @param activity the activity
-     */
-    public void showChatHead(final Activity activity) {
 
-        if (!isVisible && CustomerService.getInstance().isConnected()
-                && CustomerService.getInstance().isAdherent()) {
 
-            if (CustomerService.getInstance().isOneMember()) {
-                setAdhOneCard();
-            } else {
-                setAdhCard();
-            }
-
-            windowManager.addView(chatHead, params);
-            isVisible = true;
-            currentActivity = activity;
-        }
-
-    }
 
 
     public void updateChatHead(final Activity activity) {
@@ -257,30 +149,9 @@ public class ChatHeadService {
 
     }
 
-    /**
-     * Sets the adh card.
-     */
-    public void setAdhCard() {
 
-        if (UIUtil.isTablet()) {
-            chatHead.setImageResource(R.drawable.common_card_adh_tab);
-        } else {
-            chatHead.setImageResource(R.drawable.common_card_adh);
-        }
 
-    }
 
-    /**
-     * Sets the adh one card.
-     */
-    public void setAdhOneCard() {
-        if (UIUtil.isTablet()) {
-            chatHead.setImageResource(R.drawable.common_card_adhone_tab);
-        } else {
-            chatHead.setImageResource(R.drawable.common_card_adhone);
-        }
-
-    }
 
     /**
      * Sets the padding.
@@ -300,20 +171,5 @@ public class ChatHeadService {
         chatHead.setPadding(0, 0, 0, 0);
     }
 
-    /**
-     * Sets the initial position.
-     *
-     * @param dm the new initial position
-     */
-    public void setInitialPosition(final DisplayMetrics dm) {
-        if (UIUtil.isTablet()) {
-            params.y = 0;
-            params.x = 0;
 
-        } else {
-            params.x = width;
-
-            params.y = (int) (45 * dm.density);
-        }
-    }
 }
